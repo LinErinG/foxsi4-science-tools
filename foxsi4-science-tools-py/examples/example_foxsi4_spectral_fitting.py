@@ -13,7 +13,7 @@ from matplotlib import gridspec
 from foxsi4_science_tools_py.cdte import FOXSI4_CDTE_TO_TEL_MAPPING
 from foxsi4_science_tools_py.cdte.response import construct_cdte_response
 from foxsi4_science_tools_py.io.detectors import load_cdte, load_cmos
-from foxsi4_science_tools_py.list_filters import by_general_region
+from foxsi4_science_tools_py.list_filters import by_general_region, by_time
 from foxsi4_science_tools_py.util.clean import cdte_usual_suspects, cmos_usual_suspects
 from foxsi4_science_tools_py.util.maps import draw_grid
 from foxsi4_science_tools_py.foxsi_core import disk_map, full_disk_map, coalign_event_lists, event_data_xy_shift, count_time_profile_array
@@ -261,6 +261,7 @@ plt.show()
 # ---------------------------------
 
 obs_time_range = Time(["2024-04-17T22:14:40", "2024-04-17T22:20:41"])
+time_selection = Time(["2024-04-17T22:16:00", "2024-04-17T22:18:00"])
 
 cdte1_fields_coaligned_to_cmos, shiftxy1 = coalign_event_lists(cmos2_fields, cdte1_fields, map_kwargs={"bottom_left":bottom_left, "top_right":top_right, "number_of_bins":number_of_bins})
 cdte2_fields_coaligned_to_cmos = event_data_xy_shift(cdte2_fields_coaligned, dx=shiftxy1[0], dy=shiftxy1[1])
@@ -356,14 +357,29 @@ axes5.set_ylabel(f"{cmos2_counts.unit:latex}")
 axes5.set_xlabel(f"Start Time {cdte1_times[0]}")
 fmt = mdates.DateFormatter("%H:%M:%S")
 axes5.xaxis.set_major_formatter(fmt)
-# v0 = axes5.axvline(Time(obs_time_range[0]).plot_date, ls="-.", c="k")
-# v0 = axes5.axvline(Time(obs_time_range[1]).plot_date, ls="-.", c="k")
+v0 = axes5.axvline(Time(time_selection[0]).plot_date, ls="-.", c="k")
+v0 = axes5.axvline(Time(time_selection[1]).plot_date, ls="-.", c="k")
 axes5.set_yscale("log")
 axes5.set_xlim([cdte1_times.plot_date[0], cdte1_times.plot_date[-1]])
 plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+# %%
+# Time filter
+# -----------
+
+cdte1_fields_coaligned_to_cmos_shaped = by_time(cdte1_fields_coaligned_to_cmos_shaped, *time_selection)
+cdte2_fields_coaligned_to_cmos_shaped = by_time(cdte2_fields_coaligned_to_cmos_shaped, *time_selection)
+cdte3_fields_coaligned_to_cmos_shaped = by_time(cdte3_fields_coaligned_to_cmos_shaped, *time_selection)
+cdte4_fields_coaligned_to_cmos_shaped = by_time(cdte4_fields_coaligned_to_cmos_shaped, *time_selection)
+cmos2_fields_shaped = by_time(cmos2_fields_shaped, *time_selection)
+
+
+# %%
+# Response
+# --------
 
 # now construct the response
 # get distance from rough FOV center to source region
