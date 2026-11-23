@@ -1,5 +1,6 @@
 import astropy.units as u
 import numpy as np
+from astropy.time import Time
 from shapely import points
 
 __all__ = ["by_general_region", "by_signal", "by_time"]
