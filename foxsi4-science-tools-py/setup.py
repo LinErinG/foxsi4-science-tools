@@ -18,6 +18,9 @@ setuptools.setup(
             "lxml",
             "zeep",
             "drms",
+            "reproject",
+            "mpl_animators",
+            "shapely",
         ],
     packages=setuptools.find_packages(),
     zip_safe=False
